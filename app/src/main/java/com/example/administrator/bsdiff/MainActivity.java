@@ -20,14 +20,16 @@ import java.io.IOException;
 import io.sigpipe.jbsdiff.Diff;
 import io.sigpipe.jbsdiff.InvalidHeaderException;
 import io.sigpipe.jbsdiff.Patch;
+import io.sigpipe.jbsdiff.ui.FileUI;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button mbtnCopyapk,mGenerateFile;
+    private Button mbtnCopyapk,mGenerateFile,mCreatePatch;
     private Context mContext;
     private File mOldApkPath;
     private File mPatchFile;
     private File mNewFile;
+    private File mNewFile1;
 
 
     @Override
@@ -36,13 +38,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mbtnCopyapk = (Button) findViewById(R.id.btn_copyapk);
         mGenerateFile = (Button)findViewById(R.id.btn_newfile);
-
+        mCreatePatch = (Button) findViewById(R.id.btn_newPatch);
         mContext = this.getApplicationContext();
 
         mOldApkPath = new File(mContext.getExternalCacheDir(), "copied.apk");
         mPatchFile = new File(mContext.getExternalCacheDir(), "update.patch");
         mNewFile = new File(mContext.getExternalCacheDir(), "new.apk");
-
+        mNewFile1 = new File(mContext.getExternalCacheDir(), "new1.apk");
         mbtnCopyapk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,7 +65,14 @@ public class MainActivity extends AppCompatActivity {
                 runnable.run();
             }
         });
-//        Toast.makeText(mContext,"This is new file ", Toast.LENGTH_LONG).show();
+
+        mCreatePatch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                diffRun.run();
+            }
+        });
+        Toast.makeText(mContext,"This is new file ", Toast.LENGTH_LONG).show();
     }
 
     Runnable runnable = new Runnable() {
@@ -74,19 +83,19 @@ public class MainActivity extends AppCompatActivity {
             FileOutputStream fot = null;
             try {
                 fis = new FileInputStream(mOldApkPath);
-                byte[] oldApkByte = new byte[fis.available()];
+                byte[] oldApkByte = new byte[(int)fis.available()];
                 fis.read(oldApkByte);
+                fis.close();
 
                 fis1 = new FileInputStream(mPatchFile);
-                byte[] patchFile = new byte[fis1.available()];
+                byte[] patchFile = new byte[(int)fis1.available()];
                 fis1.read(patchFile);
-                fis.close();
                 fis1.close();
 
                 fot = new FileOutputStream(mNewFile);
 
                 Patch.patch(oldApkByte,patchFile,fot);
-
+                fot.close();
             }
             catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -96,16 +105,28 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             } catch (CompressorException e) {
                 e.printStackTrace();
-            } finally {
-                try {
-                    fot.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
+
 
         }
 
         };
+
+    Runnable diffRun = new Runnable() {
+        @Override
+        public void run() {
+
+            try {
+                FileUI.diff(mOldApkPath,mNewFile1,mPatchFile);
+            } catch (CompressorException e) {
+                e.printStackTrace();
+            } catch (InvalidHeaderException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    };
 
 }

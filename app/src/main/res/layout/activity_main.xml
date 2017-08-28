@@ -23,8 +23,13 @@
         android:id="@+id/btn_newfile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Button"
+        android:text="newapk"
         android:layout_marginTop="50dp"/>
-
+    <Button
+        android:id="@+id/btn_newPatch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="patch"
+        android:layout_marginTop="70dp"/>
 
 </LinearLayout>
