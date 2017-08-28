@@ -82,11 +82,13 @@ public class MainActivity extends AppCompatActivity {
                 fis1.read(patchFile);
                 fis.close();
                 fis1.close();
+
                 fot = new FileOutputStream(mNewFile);
 
                 Patch.patch(oldApkByte,patchFile,fot);
 
-            } catch (FileNotFoundException e) {
+            }
+            catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -94,8 +96,13 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             } catch (CompressorException e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    fot.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-
 
         }
 
