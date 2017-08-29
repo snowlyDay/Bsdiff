@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private File mPatchFile;
     private File mNewFile;
     private File mNewFile1;
+    private final String TAG = "MainActivity";
 
 
     @Override
@@ -62,20 +63,21 @@ public class MainActivity extends AppCompatActivity {
         mGenerateFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                runnable.run();
+                thread.start();
             }
         });
 
         mCreatePatch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                diffRun.run();
+                Log.i(TAG, "createPatch");
+                diffRun.start();
             }
         });
         Toast.makeText(mContext,"This is new file ", Toast.LENGTH_LONG).show();
     }
 
-    Runnable runnable = new Runnable() {
+   Thread thread = new Thread( new Runnable() {
         @Override
         public void run() {
             FileInputStream fis = null;
@@ -110,12 +112,11 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        };
+        });
 
-    Runnable diffRun = new Runnable() {
+    Thread diffRun = new Thread(new Runnable() {
         @Override
         public void run() {
-
             try {
                 FileUI.diff(mOldApkPath,mNewFile1,mPatchFile);
             } catch (CompressorException e) {
@@ -125,8 +126,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
-    };
+    });
 
 }
